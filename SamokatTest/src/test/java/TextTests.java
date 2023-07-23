@@ -9,6 +9,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.openqa.selenium.By;
+
+
+@RunWith(Parameterized.class)
 
 public class TextTests {
 
@@ -34,45 +40,41 @@ public class TextTests {
 
         }
 
+        private final By clickToQuestion;
+        private final By openedAnswer;
+        private final String anwserText;
+
+    public TextTests(By clickToQuestion, By openedAnswer, String anwserText) {
+        this.clickToQuestion = clickToQuestion;
+        this.openedAnswer = openedAnswer;
+        this.anwserText = anwserText;
+    }
+
+    @Parameterized.Parameters
+    public static Object[][] myTextTests() {
+        return new Object[][]{
+                {MainPage.howMuch, MainPage.accordeon0,"Сутки — 400 рублей. Оплата курьеру — наличными или картой."},
+                {MainPage.manyItems, MainPage.accordeon1, "Пока что у нас так: один заказ — один самокат. " +
+                        "Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим."},
+                {MainPage.cancelOrder, MainPage.accordeon6, "Да, пока самокат не привезли. Штрафа не будет, " +
+                        "объяснительной записки тоже не попросим. Все же свои."},
+        };
+    }
+
     @Test
-    public void checkHowMuchButton() {
+    public void checkAccordionButtons() {
         MainPage mainPage = new MainPage(driver);
         mainPage.open();
-        mainPage.scrollToButtonAndClick(mainPage.howMuch);
-        mainPage.isVisible(mainPage.accordeon0);
-        String actualText = driver.findElement(mainPage.accordeon0).getText();
-        Assert.assertEquals("Сутки — 400 рублей. Оплата курьеру — наличными или картой.",
+        mainPage.scrollToButtonAndClick(clickToQuestion);
+        mainPage.isVisible(openedAnswer);
+        String actualText = driver.findElement(openedAnswer).getText();
+        Assert.assertEquals(anwserText,
                 actualText);
     }
-
-    @Test
-    public void checkManyItemsButton() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.open();
-        mainPage.scrollToButtonAndClick (mainPage.manyItems);
-        mainPage.isVisible(mainPage.accordeon1);
-        String actualText = driver.findElement(mainPage.accordeon1).getText();
-        Assert.assertEquals("Пока что у нас так: один заказ — один самокат. Если хотите покататься с друзьями, можете просто сделать несколько заказов — один за другим.",
-                    actualText);
-    }
-
-    @Test
-    public void checkCancelOrderButton() {
-        MainPage mainPage = new MainPage(driver);
-        mainPage.open();
-        mainPage.scrollToButtonAndClick (mainPage.cancelOrder);
-        mainPage.isVisible(mainPage.accordeon6);
-        String actualText = driver.findElement(mainPage.accordeon6).getText();
-        Assert.assertEquals("Да, пока самокат не привезли. Штрафа не будет, объяснительной записки тоже не попросим. Все же свои.",
-                actualText);
-    }
-
-
 
     @After
     public void after() {
         driver.quit();
     }
-
 
 }

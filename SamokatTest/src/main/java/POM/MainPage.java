@@ -13,12 +13,11 @@ public class MainPage {
     private static final String PAGE_URL = "https://qa-scooter.praktikum-services.ru/";
 
     //кнопка, сколько стоит
-   // private static final WebElement howMuch = driver.findElement(".//div[@id='accordion__heading-0']");
-
     public static final By howMuch = By.id("accordion__heading-0");
 
     //кнопка, можно ли взять несколько
     public static final By manyItems = By.id("accordion__heading-1");
+
     //кнопко, как отменить запас
     public static final By cancelOrder = By.id("accordion__heading-6");
 
