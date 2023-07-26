@@ -1,38 +1,45 @@
-import POM.MainPage;
-import POM.OrderPage;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import pom.MainPage;
+import pom.OrderPage;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import io.github.bonigarcia.wdm.WebDriverManager;
 
-public class OrderTests {
 
-    private WebDriver driver;
+@RunWith(Parameterized.class)
 
-    @Before
+public class OrderTests extends SetupBrowser {
+
+   private WebDriver driver;
+
+   @Before
     public void before() {
-        setupBrowser("Chrome");
+        this.driver = setupBrowser("Chrome");
     }
 
-    private void setupBrowser (String browser) {
-        if (browser == "Firefox") {
-            System.setProperty("webdriver.gecko.driver", "/Users/svetlana/Documents/WebDriver/bin/geckodriver");
-            FirefoxOptions firefoxOptions = new FirefoxOptions();
-            driver = new FirefoxDriver();
-        }
-        if (browser == "Chrome") {
-            WebDriverManager.chromedriver().setup();
-            ChromeOptions chromeOptions = new ChromeOptions();
-            chromeOptions.addArguments("--remote-allow-origins=*");
-            driver = new ChromeDriver(chromeOptions);
-        }
-       //когда Хром - найдена ошибка, указанная в задании, в FireFox все тесты проходят корректно!
+
+    private String name;
+    private String lastName;
+    private String adress;
+    private String metroStation;
+    private String phoneNumber;
+    public OrderTests(String name, String lastName, String adress, String metroStation, String phoneNumber) {
+        this.name = name;
+        this.lastName = lastName;
+        this.adress = adress;
+        this.metroStation = metroStation;
+        this.phoneNumber = phoneNumber;
+    }
+
+    @Parameterized.Parameters
+    public static Object[][] myOrderTests() {
+        return new Object[][]{
+
+                {"Григорий", "Фунтиков", "г. Москваб ул. Ленинаб д. 1", "Черкизово", "+79051234567"},
+               };
     }
 
     @Test
@@ -40,10 +47,9 @@ public class OrderTests {
         OrderPage orderPage = new OrderPage(driver);
         MainPage mainPage = new MainPage(driver);
         mainPage.open();
-        mainPage.clickVisibleFirstOrderButton(mainPage.firstOrderButton);
-        orderPage.makeOrder();
-        String actualText = driver.findElement(orderPage.madeOrder).getText();
-        Assert.assertTrue(actualText.contains("Заказ оформлен"));
+        mainPage.clickVisibleFirstOrderButton();
+        orderPage.makeOrder(name, lastName, adress, metroStation, phoneNumber);
+        Assert.assertTrue(orderPage.getActualText().contains("Заказ оформлен"));
     }
 
     @Test
@@ -51,10 +57,9 @@ public class OrderTests {
         OrderPage orderPage = new OrderPage(driver);
         MainPage mainPage = new MainPage(driver);
         mainPage.open();
-        mainPage.scrollAndClickSecondOrderButton(mainPage.secondOrderButton);
-        orderPage.makeOrder();
-        String actualText = driver.findElement(orderPage.madeOrder).getText();
-        Assert.assertTrue(actualText.contains("Заказ оформлен"));
+        mainPage.scrollAndClickSecondOrderButton();
+        orderPage.makeOrder(name, lastName, adress, metroStation, phoneNumber);
+        Assert.assertTrue(orderPage.getActualText().contains("Заказ оформлен"));
     }
 
     @After
